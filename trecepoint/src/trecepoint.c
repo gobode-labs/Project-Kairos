@@ -1,51 +1,52 @@
 #include <sys/types.h>
+#include <sys/ptrace.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "trecepoint.h"
 
 /**
- * MODULE: Trecepoint Orchestrator
- * DESCRIPTION: Handles the lifecycle of the forensic audit.
- */
-
-/**
  * attach_to_process:
- * Initiates the ptrace handshake. This is the primary mechanism
- * for pausing a process to perform a memory or register audit.
+ * Initiates a PTRACE_ATTACH signal. The kernel will send a SIGSTOP to 
+ * the target, ensuring a static state for memory and register consistency.
  */
 void attach_to_process(pid_t pid) {
     printf("[*] Trecepoint: Initiating ptrace handshake with PID %d\n", pid);
-    /* Note: ptrace(PTRACE_ATTACH, pid, NULL, NULL) will be implemented here */
+    if (ptrace(PTRACE_ATTACH, pid, NULL, NULL) == -1) {
+        perror("[-] PTRACE_ATTACH failed");
+        exit(EXIT_FAILURE);
+    }
+    // Synchronize with the kernel to confirm the process has entered a stopped state
+    waitpid(pid, NULL, 0);
+    printf("[+] Process suspended for forensic audit.\n");
 }
 
-/**
- * main:
- * Entry point for the Trecepoint module.
- * Logic: Validates input, converts CLI argument to pid_t, and triggers the audit.
- */
 int main(int argc, char *argv[]) {
-    // Validate command line arguments
     if (argc < 2) {
-        fprintf(stderr, "[-] Error: Missing Target PID\n");
-        fprintf(stderr, "    Usage: %s <pid>\n", argv[0]);
+        fprintf(stderr, "Usage: %s <pid>\n", argv[0]);
         return EXIT_FAILURE;
     }
 
-    // Cast the input string to a Process ID type
     pid_t target_pid = (pid_t)atoi(argv[1]);
 
     printf("========================================\n");
     printf("     KAIROS: TRECEPOINT FORENSIC AUDIT  \n");
     printf("========================================\n");
 
-    // Execute the modular forensic sequence
-    attach_to_process(target_pid);  // Defined in this file
-    scan_memory(target_pid);        // Defined in memory.c
-    inspect_registers(target_pid);  // Defined in registers.c
+    // Start Forensic Sequence
+    attach_to_process(target_pid);
+    scan_memory(target_pid);
+    inspect_registers(target_pid);
+
+    // CRITICAL: DETACH
+    // This resumes the process. Without this, the target remains a 'Zombie' or 'Stopped' process.
+    if (ptrace(PTRACE_DETACH, target_pid, NULL, NULL) == -1) {
+        perror("[-] PTRACE_DETACH failed");
+    } else {
+        printf("[+] Trecepoint: Detached successfully. PID %d resumed.\n", target_pid);
+    }
 
     printf("========================================\n");
-    printf("Audit sequence finalized for PID %d.\n", target_pid);
-
     return EXIT_SUCCESS;
 }
