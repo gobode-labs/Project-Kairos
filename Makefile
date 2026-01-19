@@ -28,26 +28,33 @@ all: prep $(TRECE_EXE) $(SYMB_EXE)
 
 # === Directory Setup ===
 prep:
-    @mkdir -p $(TRECE_OBJ) $(TRECE_BIN) $(SYMB_OBJ) $(SYMB_BIN)
+	@mkdir -p $(TRECE_OBJ) $(TRECE_BIN) $(SYMB_OBJ) $(SYMB_BIN)
 
 # === TRECEpoint Build ===
 $(TRECE_OBJ)/%.o: $(TRECE_SRC)/%.c
-    $(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(TRECE_EXE): $(TRECE_OBJS)
-    $(CC) $(CFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $^ -o $@
 
 # === Symbolic Engine Build ===
 $(SYMB_OBJ)/%.o: $(SYMB_SRC)/%.c
-    $(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(SYMB_EXE): $(SYMB_OBJS)
-    $(CC) $(CFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $^ -o $@
 
 # === Clean ===
 clean:
-    rm -rf $(TRECE_OBJ) $(TRECE_BIN) $(SYMB_OBJ) $(SYMB_BIN)
+	rm -rf $(TRECE_OBJ) $(TRECE_BIN) $(SYMB_OBJ) $(SYMB_BIN)
+
+# === Help ===
+help:
+	@echo "Project-Kairos Build System"
+	@echo "Usage:"
+	@echo "  make all    - Setup directories and build all binaries"
+	@echo "  make clean  - Remove all build artifacts"
+	@echo "  make help   - Show this help message"
 
 # === Phony Targets ===
-.PHONY: all clean prep
-
+.PHONY: all clean prep help
