@@ -1,3 +1,4 @@
+HEAD
 # Gobode-Labs
 
 **Gobode-Labs** is an ecosystem of symbolic tools for runtime analysis, threat detection, and adaptive intelligence. It includes:
@@ -10,3 +11,7 @@
 ## Vision
 
 To build a new kind of intelligence — one that feels its own execution, adapts symbolically, and bridges code, physics, and cognition.
+=======
+# Project-Kairos
+A modular symbolic intelligence and forensic debugging framework. Designed for deep memory auditing, lexical analysis, and hardware-level signal mapping with a focus on mathematical integrity.
+ba68033a0d05369ec93d4da1c8685d4d4fb25358
