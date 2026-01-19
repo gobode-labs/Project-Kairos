@@ -1,0 +1,15 @@
+# Build artifacts
+*.o
+*.out
+bin/
+build/
+dist/
+
+# Python clutter
+__pycache__/
+*.pyc
+venv/
+
+# System/OS files
+.DS_Store
+.swp
